@@ -51,6 +51,31 @@ export default {
       });
   },
 
+  GET_COLORS_FROM_API({ commit }, graphParams) {
+    return axios(
+      `http://45.86.180.208:8000/get_preds_colors/?name=${graphParams.name}&date=${graphParams.date}`,
+      {
+        method: "GET",
+      }
+    )
+      .then((graph) => {
+        if (graph.data.status === 400) {
+          alert(
+            `Ошибка ${graph.status.response.status}: ${graph.status.response.data.error}`
+          );
+        }
+        commit("SET_COLORS_TO_STATE", graph.data);
+        return graph;
+      })
+      .catch((error) => {
+        if (error instanceof TypeError) {
+          alert("Ошибка: Некорректные данные или данных нет.");
+        } else {
+          alert("Произошла непредвиденная ошибка");
+        }
+      });
+  },
+
   GET_INFO_FROM_API({ commit }, graphParams) {
     return axios(
       `http://45.86.180.208:8000/get_past_desaster_data/?&date=${graphParams.date}`,

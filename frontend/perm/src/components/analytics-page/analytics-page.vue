@@ -45,9 +45,28 @@
         </div>
       </div>
     </section>
-
+    <div>
+      <h1>Уровень риска</h1>
+      <ul class="risk">
+        <li v-for="(value, key, index) in COLORS" :key="index" class="list-el">
+          <span :class="getColorClass(value)" class="risk-c"></span>
+          <span>
+            {{ key }}:
+            {{
+              value === 0
+                ? "Низкий риск"
+                : value === 1
+                ? "Средний риск"
+                : value === 2
+                ? "Высокий риск"
+                : ""
+            }}
+          </span>
+        </li>
+      </ul>
+    </div>
     <section>
-      <h1>Данные</h1>
+      <h1>Прогноз происшествий на 10 дней</h1>
       <a-table :dataSource="GRAPH.dataSource" :columns="GRAPH.columns" />
     </section>
 
@@ -82,6 +101,7 @@ export default defineComponent({
       selectedDate: "",
       pickerValue: "01.01.2018",
       info: "",
+
       options: [
         { label: "Александровский МО", value: "Александровский МО" },
         { label: "Бардымский МО", value: "Бардымский МО" },
@@ -131,6 +151,19 @@ export default defineComponent({
     ...mapActions(["GET_PREDICT_FROM_API"]),
     ...mapActions(["GET_INFO_FROM_API"]),
     ...mapActions(["GET_GRAPH_FROM_API"]),
+    ...mapActions(["GET_COLORS_FROM_API"]),
+
+    getColorClass(value) {
+      if (value === 0) {
+        return "low-risk";
+      } else if (value === 1) {
+        return "medium-risk";
+      } else if (value === 2) {
+        return "high-risk";
+      } else {
+        return "";
+      }
+    },
 
     requestGraph() {
       if (this.selectedOption && this.selectedDate) {
@@ -139,6 +172,7 @@ export default defineComponent({
         this.GET_PREDICT_FROM_API({ date, name });
         this.GET_INFO_FROM_API({ date });
         this.GET_GRAPH_FROM_API({ date, name });
+        this.GET_COLORS_FROM_API({ date, name });
       } else {
         notification.error({
           message: "Необходимо заполнить все поля",
@@ -155,6 +189,7 @@ export default defineComponent({
     ...mapGetters(["GRAPH"]),
     ...mapGetters(["PREDICT"]),
     ...mapGetters(["INFO"]),
+    ...mapGetters(["COLORS"]),
   },
 });
 </script>
@@ -164,6 +199,55 @@ export default defineComponent({
   display: flex;
   margin-bottom: 40px;
 }
+
+ul {
+  list-style-type: none;
+}
+.risk-c {
+  display: block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 5px;
+}
+
+.list-el {
+  display: flex;
+  align-items: center;
+}
+
+.low-risk {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: green;
+}
+
+.medium-risk {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: yellow;
+}
+
+.high-risk {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: red;
+}
+
+.risk {
+  text-align: left;
+  margin-left: -20px;
+
+  li {
+    font-size: 24px;
+    margin-bottom: 8px;
+    margin-left: 5px;
+  }
+}
+
 .btns-wrap {
   display: flex;
   justify-content: left;

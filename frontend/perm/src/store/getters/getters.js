@@ -11,4 +11,7 @@ export default {
   ALLINFO(state) {
     return state.allinfo;
   },
+  COLORS(state) {
+    return state.colors;
+  },
 };
